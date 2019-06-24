@@ -1,6 +1,8 @@
 import json
 import exiftool
 from datetime import datetime
+import re
+
 
 
 class ExifWriter:
@@ -13,6 +15,46 @@ class ExifWriter:
 
 
     def _get_value(self, keyword):
+        if self.template[keyword].lower().startswith("python'"):
+            code = re.search(r"python'{(.*?)\}", self.template[keyword]).groups()[0]
+            if_statement = code.split('else')[0].strip()
+            if_value = if_statement.split('if')[0].strip()
+            if_rule = if_statement.split('if')[1].strip()
+            else_statement  = code.split('else')[1].strip()
+            for data in self.raw_data:
+                if if_value == if_rule:
+                    if data['prop'].get('slug') == if_rule:
+                        if data['prop'].get('datatype') == 'enum':
+                            _tags = self.delimiter.join(tag.get('value') for tag in data.get('value') if tag.get('value'))
+                            return _tags
+                        elif data['prop'].get('datatype') == 'bool':
+                            return str(data.get('value'))
+                        elif data['prop'].get('datatype') == 'date':
+                            _dt = datetime.strptime(data.get('value'), "%Y-%m-%dT%H:%M:%SZ") \
+                                .strftime('%Y:%m:%d %H:%M:%S[%f][%z]')
+                            return str(_dt)
+                        if re.search(r'-.{2}', keyword.lower()):
+                            _lang = re.search(r'-.{2}', keyword.lower()).group().replace('-','')
+                            if data['lang'] == _lang:
+                                return data.get('value')
+                else:
+                    if data['prop'].get('slug') == if_value:
+                        if data['prop'].get('datatype') == 'enum':
+                            _tags = self.delimiter.join(tag.get('value') for tag in data.get('value') if tag.get('value'))
+                            return _tags
+                        elif data['prop'].get('datatype') == 'bool':
+                            return str(data.get('value'))
+                        elif data['prop'].get('datatype') == 'date':
+                            _dt = datetime.strptime(data.get('value'), "%Y-%m-%dT%H:%M:%SZ") \
+                                .strftime('%Y:%m:%d %H:%M:%S[%f][%z]')
+                            return str(_dt)
+                        if re.search(r'-.{2}', keyword.lower()):
+                            _lang = re.search(r'-.{2}', keyword.lower()).group().replace('-','')
+                            if data['lang'] == _lang:
+                                return data.get('value')
+            return else_statement
+
+
         for data in self.raw_data:
             if data['prop'].get('slug') == self.template[keyword]:
                 if data['prop'].get('datatype') == 'enum':
@@ -26,10 +68,10 @@ class ExifWriter:
                     return str(_dt)
                 else:
                     return data.get('value')
-            if keyword.lower().endswith('-ru'):
-                if self.template[keyword]:
-                    if data['lang'] == 'ru':
-                        return data.get('value')
+            if re.search(r'-.{2}', keyword.lower()):
+                _lang = re.search(r'-.{2}', keyword.lower()).group().replace('-', '')
+                if data['lang'] == _lang:
+                    return data.get('value')
                 else:
                     return ''
         return ''
@@ -42,6 +84,7 @@ class ExifWriter:
         _writable_data = []
 
         for keyword in self.template:
+            print(keyword, self.template[keyword])
             _val = self._get_value(keyword)
             _writable_data.append(f"-{keyword}={_val}")
         return _writable_data
