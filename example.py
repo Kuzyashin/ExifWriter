@@ -5,7 +5,7 @@ rule = {
     "XMP:Keywords": 'tags',
     "XMP:Description": 'description',
     "XMP:Description-ru": "python'{description if description else NO_DESCRIPTION}",
-    "XMP:Description-cz": "python'{tags if description else NO_DESCRIPTION}",
+    "XMP:Description-cz": "python'{description if description else NO_DESCRIPTION}",
     "PNG:Filter": 'source',
     "XMP:DateTime": 'create_date'
 }
