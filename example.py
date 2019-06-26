@@ -159,7 +159,7 @@ file = f"{script_path}/2.jpg"
 
 
 example_writer = ExifWriter()
-example_writer.delimiter = ", "
+example_writer.delimiter = "; "
 
 
 result = example_writer.write_data(raw_data, rule, file)
