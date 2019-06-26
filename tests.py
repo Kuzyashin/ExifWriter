@@ -237,7 +237,7 @@ class TestExifWriter(unittest.TestCase):
 
     def test_writing_desc_en(self):
         expected_data = {
-            'SourceFile': '/Volumes/FlashDrive/new_projects/exifer/2.jpg', 'ExifTool:ExifToolVersion': 11.52,
+            'ExifTool:ExifToolVersion': 11.52,
             'File:MIMEType': 'image/jpeg', 'File:ImageWidth': 3456, 'File:ImageHeight': 5184, 'File:EncodingProcess': 0,
             'File:BitsPerSample': 8, 'File:ColorComponents': 3, 'File:YCbCrSubSampling': '2 2',
             'JFIF:JFIFVersion': '1 1', 'JFIF:ResolutionUnit': 1, 'JFIF:XResolution': 72, 'JFIF:YResolution': 72,
@@ -281,7 +281,7 @@ class TestExifWriter(unittest.TestCase):
 
     def test_writing_desc_ru(self):
         expected_data = {
-            'SourceFile': '/Volumes/FlashDrive/new_projects/exifer/2.jpg', 'ExifTool:ExifToolVersion': 11.52,
+            'ExifTool:ExifToolVersion': 11.52,
             'File:MIMEType': 'image/jpeg', 'File:ImageWidth': 3456, 'File:ImageHeight': 5184, 'File:EncodingProcess': 0,
             'File:BitsPerSample': 8, 'File:ColorComponents': 3, 'File:YCbCrSubSampling': '2 2',
             'JFIF:JFIFVersion': '1 1', 'JFIF:ResolutionUnit': 1, 'JFIF:XResolution': 72, 'JFIF:YResolution': 72,
