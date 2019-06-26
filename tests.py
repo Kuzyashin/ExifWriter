@@ -12,7 +12,7 @@ class TestExifWriter(unittest.TestCase):
         "XMP:LensProfileFilename": 'original_filename',
         "XMP:Keywords": 'tags',
         "XMP:Description": 'description',
-        "XMP:Description-ru": True,
+        "XMP:Description-ru": "python'{description if description else NO_DESCRIPTION}",
         "PNG:Filter": 'source',
         "XMP:DateTime": 'create_date'
     }
@@ -20,7 +20,7 @@ class TestExifWriter(unittest.TestCase):
         "XMP:LensProfileFilename": 'original_filename',
         "XMP:Keywords": 'tags',
         "XMP:Description": 'description',
-        "XMP:Description-ru": False,
+        "XMP:Description-ru": "python'{description if description else NO_DESCRIPTION}",
         "PNG:Filter": 'source',
         "XMP:DateTime": 'create_date'
     }
