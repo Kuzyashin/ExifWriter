@@ -1,14 +1,14 @@
 import os
 from writer import ExifWriter
-rule = {
-    "XMP:LensProfileFilename": 'original_filename',
-    "XMP:Keywords": 'tags',
-    "XMP:Description": 'description',
-    "XMP:Description-ru": "python'{description if description else NO_DESCRIPTION}",
-    "XMP:Description-cz": "python'{tags if description else NO_DESCRIPTION}",
-    "PNG:Filter": 'source',
-    "XMP:DateTime": 'create_date'
-}
+rule = """{
+    "XMP:LensProfileFilename": "{{ getVal('original_filename') if getVal('original_filename') else "NoData" }}",
+    "XMP:Keywords": "{{ getVal('tags') if getVal('tags') else "NoData" }}",
+    "XMP:Description": "{{ getVal('description', lang='en') if getVal('description', lang='en') else "NoData" }}",
+    "XMP:Description-ru": "{{ getVal('description', lang='ru') if getVal('description', lang='ru') else "NoRuData" }}",
+    "XMP:Description-cz": "{{ getVal('description', lang='cz') if getVal('description', lang='cz') else "NoCzData" }}",
+    "PNG:Filter": "{{ getVal('source') if getVal('source') else "NoSourceData" }}",
+    "XMP:DateTime": "{{ getVal('create_date') if getVal('create_date') else "NoCreatedData" }}"
+}"""
 raw_data = [
         {u'lang': None,
          u'prop':
@@ -159,7 +159,7 @@ file = f"{script_path}/2.jpg"
 
 
 example_writer = ExifWriter()
-example_writer.delimiter = ", "
+example_writer.delimiter = "; "
 
 
 result = example_writer.write_data(raw_data, rule, file)

@@ -2,28 +2,29 @@ import json
 import os
 import unittest
 
-from .writer import ExifWriter
+from writer import ExifWriter
 
 
 class TestExifWriter(unittest.TestCase):
     test_writer = ExifWriter()
-
-    rule_ru = {
-        "XMP:LensProfileFilename": 'original_filename',
-        "XMP:Keywords": 'tags',
-        "XMP:Description": 'description',
-        "XMP:Description-ru": True,
-        "PNG:Filter": 'source',
-        "XMP:DateTime": 'create_date'
-    }
-    rule_en = {
-        "XMP:LensProfileFilename": 'original_filename',
-        "XMP:Keywords": 'tags',
-        "XMP:Description": 'description',
-        "XMP:Description-ru": False,
-        "PNG:Filter": 'source',
-        "XMP:DateTime": 'create_date'
-    }
+    rule_ru = """{
+        "XMP:LensProfileFilename": "{{ getVal('original_filename') if getVal('original_filename') else "NoData" }}",
+        "XMP:Keywords": "{{ getVal('tags') if getVal('tags') else "NoData" }}",
+        "XMP:Description": "{{ getVal('description', lang='en') if getVal('description', lang='en') else "NoData" }}",
+        "XMP:Description-ru": "{{ getVal('description', lang='ru') if getVal('description', lang='ru') else "NoRuData" }}",
+        "XMP:Description-cz": "{{ getVal('description', lang='cz') if getVal('description', lang='cz') else "NoCzData" }}",
+        "PNG:Filter": "{{ getVal('source') if getVal('source') else "NoSourceData" }}",
+        "XMP:DateTime": "{{ getVal('create_date') if getVal('create_date') else "NoCreatedData" }}"
+    }"""
+    rule_en = """{
+        "XMP:LensProfileFilename": "{{ getVal('original_filename') if getVal('original_filename') else "NoData" }}",
+        "XMP:Keywords": "{{ getVal('tags') if getVal('tags') else "NoData" }}",
+        "XMP:Description": "{{ getVal('description', lang='en') if getVal('description', lang='en') else "NoData" }}",
+        "XMP:Description-ru": "{{ getVal('description', lang='ru') if getVal('description', lang='ru') else "NoRuData" }}",
+        "XMP:Description-cz": "{{ getVal('description', lang='cz') if getVal('description', lang='cz') else "NoCzData" }}",
+        "PNG:Filter": "{{ getVal('source') if getVal('source') else "NoSourceData" }}",
+        "XMP:DateTime": "{{ getVal('create_date') if getVal('create_date') else "NoCreatedData" }}"
+    }"""
     raw_data = [
         {
             u'lang': None,
@@ -236,9 +237,14 @@ class TestExifWriter(unittest.TestCase):
 
     def test_writing_desc_en(self):
         expected_data = {
+            'ExifTool:ExifToolVersion': 11.52,
+            'File:MIMEType': 'image/jpeg', 'File:ImageWidth': 3456, 'File:ImageHeight': 5184, 'File:EncodingProcess': 0,
+            'File:BitsPerSample': 8, 'File:ColorComponents': 3, 'File:YCbCrSubSampling': '2 2',
             'JFIF:JFIFVersion': '1 1', 'JFIF:ResolutionUnit': 1, 'JFIF:XResolution': 72, 'JFIF:YResolution': 72,
             'XMP:XMPToolkit': 'Image::ExifTool 11.52',
             'XMP:Description': 'Hi! Photo by @rokenr. . #MercedesBenz #MercedesAMG # #AMG#CClass #C63AMG #BlackSeries #mbfanphoto #goodmornings #starttheday #automotivedesign #mbcar',
+            'XMP:Description-ru': 'Привет!Фото @rokenr. . #MercedesBenz #MercedesAMG # @АМГ @класса cclass @C63AMG @BlackSeries @mbfanphoto @goodmornings @starttheday @automotivedesign @mbcar',
+            'XMP:Description-cz': 'NoCzData',
             'XMP:Keywords': 'CClass; MercedesBenz; MercedesAMG; mbfanphoto; automotivedesign; mbcar; germany; the best or nothing; Daimler AG; Mercedes-Benz; AMG; vehicles; auto; zimagecollector; goodmornings; C63AMG; BlackSeries; starttheday; car; instagram; social networks; luxury',
             'XMP:LensProfileFilename': '240a3e22-6fee-11e9-9bff-0242ac110005.jpg', 'ICC_Profile:ProfileCMMType': 'Lino',
             'ICC_Profile:ProfileVersion': 528, 'ICC_Profile:ProfileClass': 'mntr', 'ICC_Profile:ColorSpaceData': 'RGB ',
@@ -273,13 +279,16 @@ class TestExifWriter(unittest.TestCase):
             self.assertEqual(expected_data[key], result[key])
         self.assertEqual(self.file, result['SourceFile'])
 
-
     def test_writing_desc_ru(self):
         expected_data = {
+            'ExifTool:ExifToolVersion': 11.52,
+            'File:MIMEType': 'image/jpeg', 'File:ImageWidth': 3456, 'File:ImageHeight': 5184, 'File:EncodingProcess': 0,
+            'File:BitsPerSample': 8, 'File:ColorComponents': 3, 'File:YCbCrSubSampling': '2 2',
             'JFIF:JFIFVersion': '1 1', 'JFIF:ResolutionUnit': 1, 'JFIF:XResolution': 72, 'JFIF:YResolution': 72,
             'XMP:XMPToolkit': 'Image::ExifTool 11.52',
             'XMP:Description': 'Hi! Photo by @rokenr. . #MercedesBenz #MercedesAMG # #AMG#CClass #C63AMG #BlackSeries #mbfanphoto #goodmornings #starttheday #automotivedesign #mbcar',
             'XMP:Description-ru': 'Привет!Фото @rokenr. . #MercedesBenz #MercedesAMG # @АМГ @класса cclass @C63AMG @BlackSeries @mbfanphoto @goodmornings @starttheday @automotivedesign @mbcar',
+            'XMP:Description-cz': 'NoCzData',
             'XMP:Keywords': 'CClass; MercedesBenz; MercedesAMG; mbfanphoto; automotivedesign; mbcar; germany; the best or nothing; Daimler AG; Mercedes-Benz; AMG; vehicles; auto; zimagecollector; goodmornings; C63AMG; BlackSeries; starttheday; car; instagram; social networks; luxury',
             'XMP:LensProfileFilename': '240a3e22-6fee-11e9-9bff-0242ac110005.jpg', 'ICC_Profile:ProfileCMMType': 'Lino',
             'ICC_Profile:ProfileVersion': 528, 'ICC_Profile:ProfileClass': 'mntr', 'ICC_Profile:ColorSpaceData': 'RGB ',
